@@ -1,0 +1,118 @@
+{% load rest_framework %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <title>Dynamic Form and Model Serializer</title>
+</head>
+
+<body>
+    <div class="container forms">
+        <div class="dynamic-form">
+            <h2>Dynamic Form</h2>
+            {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{field.field.widget.input_type}}
+                        {% if field.field.widget.input_type %}
+                            <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" />
+                            <button>Delete</button>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+        </div>
+
+        <div class="new-field-form">
+            <form method="post" action="" id="field-form">
+                <h2>New Field Form</h2>
+                {% csrf_token %}
+                <label for="type">Select Field Type:</label>
+                <select id="type" name="type" onchange="getSelectedValue()">
+                    <option value="">Select</option>
+                    <option value="text">Text</option>
+                    <option value="email">Email</option>
+                    <option value="number">Number</option>
+                    <option value="float">Float</option>
+                    <option value="date">Date</option>
+                    <option value="datetime">DateTime</option>
+                    <option value="boolean">Boolean</option>
+                    <option value="choice">Choice</option>
+                    <option value="url">URL</option>
+                    <option value="file">File</option>
+                    <option value="image">Image</option>
+                </select>
+
+                <div id="single-field">
+                    <p>Single field</p>
+                    <form>
+                        {% render_form serializer %}
+                        <button type="submit">Submit Field</button>
+                    </form>
+                </div>
+                <div id="multiple-field">
+                    <p>Multiple field</p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <style>
+        #single-field,
+        #multiple-field {
+            display: none;
+        }
+        .forms{
+            display: flex;
+        }
+        .forms .dynamic-form{
+            width: 70%;
+            padding: 0 2rem;
+        }
+        .forms .new-field-form{
+            width: 30%;
+            position: sticky;
+            top: 0;
+            margin: 0 2rem;
+            height: fit-content;
+        }
+        .forms div input{
+            width: 100%;
+        }
+    </style>
+    <script>
+        function getSelectedValue() {
+            const dropdown = document.getElementById("type");
+            const selectedValue = dropdown.value;
+            const singleField = document.getElementById("single-field");
+            const multipleField = document.getElementById("multiple-field");
+
+            // List of field types for single fields
+            const singleFieldTypes = [
+                "text",
+                "email",
+                "number",
+                "float",
+                "date",
+                "datetime",
+                "boolean",
+                "url",
+                "file",
+                "image",
+            ];
+
+            if (singleFieldTypes.includes(selectedValue)) {
+                singleField.style.display = "block";
+                multipleField.style.display = "none";
+            } else {
+                singleField.style.display = "none";
+                multipleField.style.display = "block";
+            }
+        }
+    </script>
+</body>
+
+</html>
