@@ -15,16 +15,24 @@
             <h2>Dynamic Form</h2>
             {% for field in form %}
                     <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{field.field.widget.input_type}}
-                        {% if field.field.widget.input_type %}
-                            <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" />
-                            <button>Delete</button>
+                        <label>{{ field.name }}</label>
+                        {% if field.type %}
+                            <input type="{{ field.type }}" name="{{ field.name }}" class="form-control" disabled/>
+                            <form action="{% url 'delete-field' field_id=field.id form_id=form_id %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
                         {% else %}
                             {{ field }}
                         {% endif %}
                     </div>
                 {% endfor %}
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="SUBMIT">
+                <button type="submit" class="btn btn-info">Submit</button>
+            </form>
         </div>
 
         <div class="new-field-form">
